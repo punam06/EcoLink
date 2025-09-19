@@ -1,0 +1,140 @@
+services:
+  # MySQL Database
+  mysql:
+    image: mysql:8.0
+    container_name: ecolink_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: ecolink
+      MYSQL_USER: ecolink_user
+      MYSQL_PASSWORD: ecolink_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+
+  # Redis for Celery
+  redis:
+    image: redis:7-alpine
+    container_name: ecolink_redis
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+
+  # MinIO for S3 storage
+  minio:
+    image: minio/minio:latest
+    container_name: ecolink_minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    restart: unless-stopped
+
+  # Django Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ecolink_backend
+    environment:
+      DEBUG: "True"
+      SECRET_KEY: "django-insecure-development-key-for-docker"
+      MYSQL_HOST: mysql
+      MYSQL_DB: ecolink
+      MYSQL_USER: ecolink_user
+      MYSQL_PASSWORD: ecolink_password
+      MYSQL_PORT: "3306"
+      CELERY_BROKER_URL: "redis://redis:6379"
+      CELERY_RESULT_BACKEND: "redis://redis:6379"
+      S3_ENDPOINT: "http://minio:9000"
+      S3_BUCKET: ecolink
+      S3_KEY: minioadmin
+      S3_SECRET: minioadmin
+      S3_USE_SSL: "False"
+      REGION_KWH_PER_GB: "0.006"
+      REGION_CO2_G_PER_KWH: "400"
+      MAX_UPLOAD_SIZE: "524288000"
+      ALLOWED_HOSTS: "localhost,127.0.0.1,backend"
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysql
+      - redis
+      - minio
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
+
+  # Celery Worker
+  celery_worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ecolink_celery_worker
+    command: celery -A ecolink worker --loglevel=info
+    environment:
+      DEBUG: "True"
+      SECRET_KEY: "django-insecure-development-key-for-docker"
+      MYSQL_HOST: mysql
+      MYSQL_DB: ecolink
+      MYSQL_USER: ecolink_user
+      MYSQL_PASSWORD: ecolink_password
+      MYSQL_PORT: "3306"
+      CELERY_BROKER_URL: "redis://redis:6379"
+      CELERY_RESULT_BACKEND: "redis://redis:6379"
+      S3_ENDPOINT: "http://minio:9000"
+      S3_BUCKET: ecolink
+      S3_KEY: minioadmin
+      S3_SECRET: minioadmin
+      S3_USE_SSL: "False"
+      REGION_KWH_PER_GB: "0.006"
+      REGION_CO2_G_PER_KWH: "400"
+    depends_on:
+      - mysql
+      - redis
+      - minio
+    volumes:
+      - ./backend:/app
+    restart: unless-stopped
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: ecolink_frontend
+    environment:
+      VITE_API_BASE_URL: "http://localhost:8000/api"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy
+  nginx:
+    image: nginx:alpine
+    container_name: ecolink_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+      - frontend
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+  minio_data:
