@@ -12,7 +12,6 @@ import {
   Typography,
   Alert,
   CircularProgress,
-  Grid,
   Divider,
 } from '@mui/material'
 import { useAuth } from '../../contexts/AuthContext'
@@ -136,8 +135,8 @@ const RegisterPage: React.FC = () => {
             )}
 
             <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ width: '100%' }}>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={6}>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                <Box sx={{ flex: '1 1 calc(50% - 8px)', minWidth: '250px' }}>
                   <TextField
                     margin="normal"
                     required
@@ -150,8 +149,8 @@ const RegisterPage: React.FC = () => {
                     helperText={errors.firstName?.message}
                     {...register('firstName')}
                   />
-                </Grid>
-                <Grid item xs={12} sm={6}>
+                </Box>
+                <Box sx={{ flex: '1 1 calc(50% - 8px)', minWidth: '250px' }}>
                   <TextField
                     margin="normal"
                     required
@@ -163,8 +162,8 @@ const RegisterPage: React.FC = () => {
                     helperText={errors.lastName?.message}
                     {...register('lastName')}
                   />
-                </Grid>
-                <Grid item xs={12} sm={6}>
+                </Box>
+                <Box sx={{ flex: '1 1 calc(50% - 8px)', minWidth: '250px' }}>
                   <TextField
                     margin="normal"
                     required
@@ -176,8 +175,8 @@ const RegisterPage: React.FC = () => {
                     helperText={errors.username?.message}
                     {...register('username')}
                   />
-                </Grid>
-                <Grid item xs={12} sm={6}>
+                </Box>
+                <Box sx={{ flex: '1 1 calc(50% - 8px)', minWidth: '250px' }}>
                   <TextField
                     margin="normal"
                     required
@@ -190,8 +189,8 @@ const RegisterPage: React.FC = () => {
                     helperText={errors.email?.message}
                     {...register('email')}
                   />
-                </Grid>
-                <Grid item xs={12} sm={6}>
+                </Box>
+                <Box sx={{ flex: '1 1 calc(50% - 8px)', minWidth: '250px' }}>
                   <TextField
                     margin="normal"
                     required
@@ -204,8 +203,8 @@ const RegisterPage: React.FC = () => {
                     helperText={errors.password?.message}
                     {...register('password')}
                   />
-                </Grid>
-                <Grid item xs={12} sm={6}>
+                </Box>
+                <Box sx={{ flex: '1 1 calc(50% - 8px)', minWidth: '250px' }}>
                   <TextField
                     margin="normal"
                     required
@@ -218,8 +217,8 @@ const RegisterPage: React.FC = () => {
                     helperText={errors.confirmPassword?.message}
                     {...register('confirmPassword')}
                   />
-                </Grid>
-              </Grid>
+                </Box>
+              </Box>
               
               <Button
                 type="submit"
