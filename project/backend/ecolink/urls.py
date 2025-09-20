@@ -17,13 +17,25 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+from django.http import JsonResponse
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
 )
 
+def health_check(request):
+    """Simple health check endpoint for deployment monitoring"""
+    return JsonResponse({
+        'status': 'healthy',
+        'service': 'ecolink-backend',
+        'version': '1.0.0'
+    })
+
 urlpatterns = [
     path("admin/", admin.site.urls),
+    
+    # Health check
+    path('api/health/', health_check, name='health_check'),
     
     # Authentication endpoints
     path('api/auth/login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
