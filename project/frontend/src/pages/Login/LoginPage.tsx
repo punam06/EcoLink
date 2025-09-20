@@ -1,5 +1,5 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -12,6 +12,7 @@ import {
   Typography,
   Alert,
   CircularProgress,
+  Divider,
 } from '@mui/material'
 import { useAuth } from '../../contexts/AuthContext'
 
@@ -55,16 +56,16 @@ const LoginPage: React.FC = () => {
   }
 
   return (
-    <Container component="main" maxWidth="sm">
+    <Container component="main" maxWidth="md">
       <Box
         sx={{
-          marginTop: 8,
+          marginTop: 6,
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
         }}
       >
-        <Paper elevation={3} sx={{ padding: 4, width: '100%' }}>
+        <Paper elevation={3} sx={{ padding: 6, width: '100%' }}>
           <Box
             sx={{
               display: 'flex',
@@ -79,17 +80,17 @@ const LoginPage: React.FC = () => {
             >
               🌱 EcoLink
             </Typography>
-            <Typography component="h2" variant="h5" sx={{ mb: 3 }}>
-              Sign In
+            <Typography component="h2" variant="h5" sx={{ mb: 4 }}>
+              Welcome Back
             </Typography>
             
             {error && (
-              <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
+              <Alert severity="error" sx={{ width: '100%', mb: 3 }}>
                 {error}
               </Alert>
             )}
 
-            <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1, width: '100%' }}>
+            <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ mt: 1, width: '100%', maxWidth: 400 }}>
               <TextField
                 margin="normal"
                 required
@@ -101,6 +102,7 @@ const LoginPage: React.FC = () => {
                 error={!!errors.username}
                 helperText={errors.username?.message}
                 {...register('username')}
+                sx={{ mb: 2 }}
               />
               <TextField
                 margin="normal"
@@ -113,23 +115,45 @@ const LoginPage: React.FC = () => {
                 error={!!errors.password}
                 helperText={errors.password?.message}
                 {...register('password')}
+                sx={{ mb: 3 }}
               />
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2 }}
+                sx={{ mt: 2, mb: 3, py: 1.5 }}
                 disabled={isLoading}
                 startIcon={isLoading ? <CircularProgress size={20} /> : null}
               >
                 {isLoading ? 'Signing In...' : 'Sign In'}
               </Button>
+              
+              <Divider sx={{ my: 3 }} />
+              
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="body2">
+                  Don't have an account?{' '}
+                  <Link 
+                    to="/register" 
+                    style={{ 
+                      color: '#2e7d32', 
+                      textDecoration: 'none',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    Create one here
+                  </Link>
+                </Typography>
+              </Box>
             </Box>
           </Box>
         </Paper>
 
-        <Box sx={{ mt: 4, textAlign: 'center' }}>
-          <Typography variant="body2" color="text.secondary">
+        <Box sx={{ mt: 4, textAlign: 'center', maxWidth: 600 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            🌍 Sustainable File Management Platform
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
             EcoLink helps you manage files sustainably by detecting duplicates
             and measuring environmental impact.
           </Typography>

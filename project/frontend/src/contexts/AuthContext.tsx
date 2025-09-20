@@ -3,10 +3,19 @@ import type { ReactNode } from 'react'
 import { authAPI } from '../api/client'
 import type { LoginRequest, LoginResponse } from '../types/api'
 
+interface RegisterRequest {
+  username: string
+  email: string
+  firstName: string
+  lastName: string
+  password: string
+}
+
 interface AuthContextType {
   isAuthenticated: boolean
   user: { username: string } | null
   login: (credentials: LoginRequest) => Promise<void>
+  register: (data: RegisterRequest) => Promise<void>
   logout: () => void
   isLoading: boolean
 }
@@ -50,6 +59,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   }
 
+  const register = async (data: RegisterRequest): Promise<void> => {
+    try {
+      // For demo purposes, simulate a successful registration
+      // In real implementation, this would make an API call
+      await new Promise((resolve) => setTimeout(resolve, 1000))
+      
+      // Simulate successful registration response
+      console.log('Registration successful for:', data.username)
+    } catch (error) {
+      throw error
+    }
+  }
+
   const logout = (): void => {
     localStorage.removeItem('access_token')
     localStorage.removeItem('refresh_token')
@@ -63,6 +85,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isAuthenticated,
     user,
     login,
+    register,
     logout,
     isLoading,
   }

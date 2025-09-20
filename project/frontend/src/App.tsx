@@ -6,6 +6,7 @@ import { ThemeProvider, createTheme, CssBaseline } from '@mui/material'
 import { AuthProvider, useAuth } from './contexts/AuthContext'
 import Layout from './components/Layout/Layout'
 import LoginPage from './pages/Login/LoginPage'
+import RegisterPage from './pages/Register/RegisterPage'
 import DashboardPage from './pages/Dashboard/DashboardPage'
 import UploadPage from './pages/Upload/UploadPage'
 import FilesPage from './pages/Files/FilesPage'
@@ -87,6 +88,14 @@ const AppRoutes: React.FC = () => {
         element={
           <PublicRoute>
             <LoginPage />
+          </PublicRoute>
+        } 
+      />
+      <Route 
+        path="/register" 
+        element={
+          <PublicRoute>
+            <RegisterPage />
           </PublicRoute>
         } 
       />
